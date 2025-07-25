@@ -41,9 +41,6 @@ public class EnemyFSM : MonoBehaviour
         originRot = transform.rotation;
         anim = transform.GetComponentInChildren<Animator>();
         smith = GetComponent<NavMeshAgent>();
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()

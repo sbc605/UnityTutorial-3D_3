@@ -14,6 +14,15 @@ public class FPSPlayerFire : MonoBehaviour
     private Animator anim;
     private ParticleSystem ps;
 
+    public GameObject weapon01;
+    public GameObject weapon02;
+
+    public GameObject weapon01_R;
+    public GameObject weapon02_R;
+
+    public GameObject crosshair01;
+    public GameObject crosshair02;
+
     public TextMeshProUGUI wModeText;
     public GameObject[] eff_Flash;
 
@@ -82,7 +91,7 @@ public class FPSPlayerFire : MonoBehaviour
                     bomb.transform.position = firePosition.transform.position;
 
                     Rigidbody rb = bomb.GetComponent<Rigidbody>();
-                    rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
+                    rb.AddForce((Camera.main.transform.forward + Camera.main.transform.up * 0.5f) * throwPower, ForceMode.Impulse);
                     break;
 
 
@@ -108,20 +117,34 @@ public class FPSPlayerFire : MonoBehaviour
 
     void AlphaKeypad()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) // qwer 위 1 // Keypad1은 오른쪽 키패드넘버
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            wMode = WeaponMode.Normal;
-            Camera.main.fieldOfView = 60f;
-
-            wModeText.text = "Normal Mode";
+            SetWeaponMode(WeaponMode.Normal);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            wMode = WeaponMode.Sniper;
-
-            wModeText.text = "Sniper Mode";
+            SetWeaponMode(WeaponMode.Sniper);
         }
     }
+
+    void SetWeaponMode(WeaponMode mode)
+    {
+        wMode = mode;
+        ZoomMode = false; // 확대 모드는 전환 시 항상 초기화
+        Camera.main.fieldOfView = 60f;
+
+        bool isNormal = (mode == WeaponMode.Normal);
+
+        wModeText.text = isNormal ? "Normal Mode" : "Sniper Mode";
+
+        weapon01.SetActive(isNormal);
+        weapon02.SetActive(!isNormal);
+        weapon01_R.SetActive(isNormal);
+        weapon02_R.SetActive(!isNormal);
+        crosshair01.SetActive(isNormal);
+        crosshair02.SetActive(!isNormal);
+    }
+
 
     IEnumerator ShootEffectOn(float duration)
     {

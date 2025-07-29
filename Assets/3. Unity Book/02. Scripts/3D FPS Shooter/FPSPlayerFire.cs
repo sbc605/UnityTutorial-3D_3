@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class FPSPlayerFire : MonoBehaviour
 {
+    #region 멤버변수
     private enum WeaponMode { Normal, Sniper }
     private WeaponMode wMode;
 
@@ -22,6 +23,7 @@ public class FPSPlayerFire : MonoBehaviour
 
     public GameObject crosshair01;
     public GameObject crosshair02;
+    public GameObject crosshair02_Zoom;
 
     public TextMeshProUGUI wModeText;
     public GameObject[] eff_Flash;
@@ -30,7 +32,7 @@ public class FPSPlayerFire : MonoBehaviour
     public int weaponPower = 5;
 
     private bool ZoomMode = false;
-
+    #endregion
 
     void Start()
     {
@@ -50,6 +52,7 @@ public class FPSPlayerFire : MonoBehaviour
         AlphaKeypad();
     }
 
+    #region 마우스 좌클릭 -> 총 발사
     void LeftClick()
     {
         if (Input.GetMouseButtonDown(0)) // 마우스 왼쪽 버튼 클릭
@@ -79,13 +82,16 @@ public class FPSPlayerFire : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    #region 마우스 우클릭 -> 수류탄, 저격
     void RightClick()
     {
         if (Input.GetMouseButtonDown(1)) // 마우스 오른쪽 버튼 클릭
         {
             switch (wMode)
             {
+                #region 일반
                 case WeaponMode.Normal: // 일반 모드일 때 마우스 오른쪽 -> 수류탄 투척
                     GameObject bomb = Instantiate(bombFactory);
                     bomb.transform.position = firePosition.transform.position;
@@ -93,27 +99,25 @@ public class FPSPlayerFire : MonoBehaviour
                     Rigidbody rb = bomb.GetComponent<Rigidbody>();
                     rb.AddForce((Camera.main.transform.forward + Camera.main.transform.up * 0.5f) * throwPower, ForceMode.Impulse);
                     break;
+                #endregion
 
-
+                #region 스나이퍼
                 case WeaponMode.Sniper: // 저격 모드일 때 마우스 오른쪽 -> 확대/축소 조준경
-                    /* if (!ZoomMode)
-                    {
-                        Camera.main.fieldOfView = 15f;
-                        ZoomMode = true;
-                    }
-                    else
-                    {
-                        Camera.main.fieldOfView = 60f;
-                        ZoomMode = false;
-                    } */
 
-                    float fov = ZoomMode ? 60f : 15f;
-                    Camera.main.fieldOfView = fov;
                     ZoomMode = !ZoomMode;
+                    float fov = ZoomMode ? 15f : 60f;
+                    Camera.main.fieldOfView = fov;
+
+                    crosshair02_Zoom.SetActive(ZoomMode);
+                    crosshair02.SetActive(!ZoomMode);
+
                     break;
+                    #endregion
             }
         }
     }
+    #endregion
+
 
     void AlphaKeypad()
     {
@@ -143,8 +147,8 @@ public class FPSPlayerFire : MonoBehaviour
         weapon02_R.SetActive(!isNormal);
         crosshair01.SetActive(isNormal);
         crosshair02.SetActive(!isNormal);
+        crosshair02_Zoom.SetActive(!isNormal);
     }
-
 
     IEnumerator ShootEffectOn(float duration)
     {
